@@ -2,7 +2,7 @@
 Spark-Admin
 ===============
 
-The Spark-Admin provides administrators and developers a GUI to provision and manage Spark clusters easily. The current alpha version is based on Spark-EC2 script and its latest AMI. Support for other different Linux distros is planned in the next version.
+The Spark-Admin provides administrators and developers a GUI to provision and manage Spark clusters easily. The current alpha version is based on Spark-EC2 script and its latest AMI. Support for different Linux distros is planned in the next version.
 
 # Features
 * Automatically detect existing Spark clusters created by spark-ec2 script
@@ -58,12 +58,12 @@ Then point your browser to `http://localhost:8888` and specify the Amazon creden
 
 * Automatically detect existing Spark clusters
 
-    ![Automatically detect existing Spark clusters](https://lh6.googleusercontent.com/-GNFBtzwkMyM/UW0bSEgowsI/AAAAAAAAACw/stJKCLeKUhk/s901/spark_admin_0.png)
+    ![Automatically detect existing Spark clusters](https://lh6.googleusercontent.com/-GNFBtzwkMyM/UW0bSEgowsI/AAAAAAAAACw/stJKCLeKUhk/s600/spark_admin_0.png)
 
 * Manage installed services on the cluster
 
-    ![Manage installed services on the cluster](https://lh5.googleusercontent.com/-UlvJn5l2GwU/UW0bSWKmkgI/AAAAAAAAACs/TeAj6ywgNk0/s646/spark_admin_1.png)
+    ![Manage installed services on the cluster](https://lh5.googleusercontent.com/-UlvJn5l2GwU/UW0bSWKmkgI/AAAAAAAAACs/TeAj6ywgNk0/s600/spark_admin_1.png)
 
 * Execute Shark query on the fly
 
-    ![Execute Shark SQL](https://lh3.googleusercontent.com/-tHXdbE94yUc/UW0bSJt6RsI/AAAAAAAAACo/lZGJdRfcNI0/s902/spark_admin_1.png)
+    ![Execute Shark SQL](https://lh3.googleusercontent.com/-tHXdbE94yUc/UW0bSJt6RsI/AAAAAAAAACo/lZGJdRfcNI0/s600/spark_admin_1.png)
