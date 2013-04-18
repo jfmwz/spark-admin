@@ -11,7 +11,7 @@ The Spark-Admin provides administrators and developers a GUI to provision and ma
 * Start/Stop/Restart services on the cluster (Mesos, Spark, Shark, Ganglia, HDFS, MapReduce)
 * Execute Shark SQL query on the fly  
 
-# Install
+# Installation
 
 Install PIP/PyCurl
 
@@ -67,3 +67,14 @@ Then point your browser to `http://localhost:8888` and specify the Amazon creden
 * Execute Shark query on the fly
 
     ![Execute Shark SQL](https://lh3.googleusercontent.com/-tHXdbE94yUc/UW0bSJt6RsI/AAAAAAAAACo/lZGJdRfcNI0/s600/spark_admin_1.png)
+
+# Third-party software
+
+* spark-ec2 script https://github.com/mesos/spark/tree/master/ec2
+* Bootstrap http://twitter.github.io/bootstrap/
+* JQuery http://jquery.com/
+* CodeMirror http://codemirror.net/
+
+# License
+
+The license is BSD, the same as Spark.
