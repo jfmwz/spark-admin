@@ -1,0 +1,21 @@
+{% extends main.html %}
+
+{% block content %}
+  <h3>Settings</h3>
+ 	  {% if error_code == 0 %}
+	  	<div class="alert alert-success">{{error_msg}}</div>
+	  {% elif error_code > 0 %}
+	  	<div class="alert alert-error">{{error_msg}}</div>
+	  {% end %}
+  <form method="post" action="/settings">
+	  <fieldset>
+	    <label>AWS ACCESS KEY</label>
+	    <input type="text" name="AWS_ACCESS_KEY" value="{{AWS_ACCESS_KEY}}" size="80">
+	    <label>AWS SECRET KEY</label>
+	    <input type="text" name="AWS_SECRET_KEY" value="{{AWS_SECRET_KEY}}" size="80">
+	    <br/>
+	    <button type="submit" class="btn btn-primary">Save</button>
+	  </fieldset>
+  </form>
+{% end %}
+

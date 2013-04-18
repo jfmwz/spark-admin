@@ -1,0 +1,111 @@
+{% extends main.html %} {% block content %}
+<script>
+	function redirect(msg, url)
+	{
+	   var ok = confirm(msg);
+	   if(ok) 
+	   	 window.location = url;
+	}
+</script>
+
+<h3>Cluster: {{cluster_name}}</h3>
+
+{% if len(master_nodes) > 0 %}
+	{% if master_nodes[0].state == "running" %}
+		<h4>Installed Services</h4>
+		<table class="table table-hover">
+			<tr>
+				<td><b>Service</b></td>
+				<td><b>Status</b></td>
+				<td><b>Action</b></td>
+			</tr>
+			{% for service in services %}
+				<tr>
+					{% if service_statuses[service] %}
+						<td><a target="_blank" href="{{service_links[service]}}">{{service_names[service]}}</a></td>
+						<td><img src="/static/img/status_green.gif"> running</td>
+						<td>
+							<a class="btn btn-danger" href="javascript:redirect('Are you sure to stop {{service_names[service]}} on {{cluster_name}}?', '/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service={{service}}&action=stop&key_pair={{master_nodes[0].key_name}}')">Stop service</a>
+							<a class="btn btn-warning" href="javascript:redirect('Are you sure to restart {{service_names[service]}} on {{cluster_name}}?', '/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service={{service}}&action=restart&key_pair={{master_nodes[0].key_name}}')">Restart service</a>
+						</td>
+					{% else %}
+						<td>{{service_names[service]}}</td>
+						<td>
+							<img src="/static/img/status_red.gif"> stopped
+						</td>
+						<td>
+							<a class="btn btn-primary" href="/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service={{service}}&action=start&key_pair={{master_nodes[0].key_name}}">Start service</a>
+						</td>
+					{% end %}
+				</tr>
+			{% end %}
+		</table>
+	{% end %}
+{% end %}
+
+<h4>Masters</h4>
+{% if len(master_nodes) > 0 %}
+<table class="table table-hover">
+	<tr>
+		<td><b>ID</b></td>
+		<td><b>Key Pair</b></td>
+		<td><b>DNS</b></td>
+		<td><b>Type</b></td>
+		<td><b>Status</b></td>
+	</tr>
+	{% for node in master_nodes %}
+	<tr>
+		<td>{{node.id}}</td>
+		<td>{{node.key_name}}</td>
+		<td><a target="_blank"
+			href="http://{{node.public_dns_name}}:8080">{{node.public_dns_name}}</a><br /></td>
+		<td>{{node.instance_type}}</td>
+		<td>
+			{% if node.state=="running"%}
+				<img src="/static/img/status_green.gif">
+			{% elif node.state=="stopped" %} 
+				<img src="/static/img/status_red.gif">
+			{% end %}
+			{{node.state}}
+		</td>
+	</tr>
+	{% end %}
+</table>
+{% end %} 
+<h4>Slaves</h4>
+{% if len(slave_nodes) > 0 %}
+<table class="table table-hover">
+	<tr>
+		<td><b>ID</b></td>
+		<td><b>Key Pair</b></td>
+		<td><b>DNS</b></td>
+		<td><b>Type</b></td>
+		<td><b>Status</b></td>
+	</tr>
+	{% for node in slave_nodes %}
+	<tr>
+		<td>{{node.id}}</td>
+		<td>{{node.key_name}}</td>
+		<td><a target="_blank"
+			href="http://{{node.public_dns_name}}:8081">{{node.public_dns_name}}</a><br /></td>
+		<td>{{node.instance_type}}</td>
+		<td>
+			{% if node.state=="running"%}
+				<img src="/static/img/status_green.gif">
+			{% elif node.state=="stopped" %} 
+				<img src="/static/img/status_red.gif">
+			{% end %}
+			{{node.state}}
+		</td>
+	</tr>
+	{% end %}
+</table>
+
+{% if master_nodes[0].state=="stopped" %}
+	<a class="btn btn-primary" href="/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service=cluster&action=start&key_pair={{master_nodes[0].key_name}}">Start cluster</a>
+{% else %}
+	<a class="btn btn-danger" href="javascript:redirect('Are you sure to stop cluster {{cluster_name}}?', '/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service=cluster&action=stop&key_pair={{master_nodes[0].key_name}}')">Stop cluster</a>
+{% end %}
+<a class="btn btn-danger" href="javascript:redirect('Are you sure to terminate cluster {{cluster_name}}?', '/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service=cluster&action=terminate&key_pair={{master_nodes[0].key_name}}')">Terminate cluster</a>
+<br/>
+{% end %} {% end %}

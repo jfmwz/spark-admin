@@ -1,0 +1,1 @@
+Put your Amazon private keys in this directory. For example, if you want to create or manage clusters using `spark-key`, then copy `spark-key.pem` to this directory. Also remember to change all your .pem to mode `600`  

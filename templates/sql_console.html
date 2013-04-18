@@ -1,0 +1,45 @@
+{% extends main.html %}
+
+{% block head_content %}
+	<link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+	<script src="/static/codemirror/lib/codemirror.js"></script>
+	<script src="/static/codemirror/mode/sql/sql.js"></script>
+	<script src="/static/codemirror/addon/selection/active-line.js"></script>
+	<style type="text/css">
+	.CodeMirror {
+		border-top: 1px solid black;
+		border-bottom: 1px solid black;
+	}
+	.CodeMirror-activeline-background {
+		background: #e8f2ff !important;
+	}
+	</style>
+{% end %}
+
+{% block content %}
+  	<h3>SQL Console</h3>
+	<form method="post" action="/sql_console?server={{server}}">
+		<textarea id="code" name="code" style="height:200px">
+		{{code}}
+		</textarea>
+		<input name='server' type='text' size='80' value='{{server}}' style='width:100%;' readonly/>
+		<br/>
+		<INPUT type='submit' value='Execute' class='btn btn-primary'>
+	</form>
+
+	<script>
+		var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+			mode : "text/x-plsql",
+			styleActiveLine : true,
+			lineNumbers : true,
+			lineWrapping : true,
+		});
+		editor.setSize("100%", 200);
+	</script>
+	{% if result != "" %}
+		<h4>Result</h4>
+		<pre>{% for line in result %}
+		{{line}}{% end %}</pre>
+	{% end %}
+{% end %}
+
