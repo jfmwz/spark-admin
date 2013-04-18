@@ -10,6 +10,7 @@ The Spark-Admin provides administrators and developers a GUI to provision and ma
 * Start/Stop/Terminate Spark clusters
 * Start/Stop/Restart services on the cluster (Mesos, Spark, Shark, Ganglia, HDFS, MapReduce)
 * Execute Shark SQL query on the fly  
+* Fully compatible with spark-ec2, you can use Spark-Admin and spark-ec2 script interchangeably
 
 # Installation
 
@@ -37,7 +38,7 @@ Run spark-admin
     cd spark-admin
     python app.py
 
-Then point your browser to `http://localhost:8888` and specify the Amazon credentials in the [Settings] menu
+Then point your browser to `http://localhost:8888` and fill in the AWS credentials in the [Settings] menu
 
 # FAQs
 

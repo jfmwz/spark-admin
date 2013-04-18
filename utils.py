@@ -57,7 +57,7 @@ def isOpen(ip, port):
 def get_ec2_conn(self):
 	(AWS_ACCESS_KEY, AWS_SECRET_KEY) = get_aws_credentials()
 	if AWS_ACCESS_KEY == "" or AWS_SECRET_KEY == "":
-		self.render('home.html', error_msg="Please visit Settings page and set the AWS key to proceed!")
+		self.render('home.html', error_msg="Please visit Settings page and set the AWS credentials to proceed!")
 	conn = ec2.connect_to_region("us-east-1", aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
 	return conn
 
