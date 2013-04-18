@@ -2,7 +2,7 @@
 Spark-Admin
 ===============
 
-The Spark-Admin provides administrators and developers a GUI to provision and manage Spark clusters and its related services easily. The current alpha version is based on Spark-EC2 script and its latest AMI. Support for other different Linux distros is planned in the next few months.
+The Spark-Admin provides administrators and developers a GUI to provision and manage Spark clusters and its related services easily. The current alpha version is based on Spark-EC2 script and its latest AMI. Support for other different Linux distros is planned in the next version.
 
 # Features
 * Automatically detect existing Spark clusters created by spark-ec2 script
@@ -13,7 +13,11 @@ The Spark-Admin provides administrators and developers a GUI to provision and ma
 
 # Install
 
-Install PIP http://www.pip-installer.org/en/latest/installing.html#using-get-pip
+Install PIP
+
+* Ubuntu: `sudo apt-get install python-pip`
+* RHEL/CentOS: `sudo yum install python-pip`
+* Build from source: http://www.pip-installer.org/en/latest/installing.html#using-get-pip
 
 Install Python dependencies
 
@@ -43,6 +47,10 @@ Then point your browser to `http://localhost:8888` and specify the Amazon creden
 * **Where is web server log?**
 
     Please click on [Server Logs] in the GUI menu, or track it at `<spark-admin>/static/server.log`
+
+* **I try to start Shark service, but nothing happens?**
+
+    If you start Shark service on existing clusters created by spark-ec2 script, but not Spark-Admin, remember to open the port 10000 on the master for the Spark-Admin web server to talk to. Also starting Shark service may take a few seconds, then you can wait for around 5 seconds then refresh the page. 
 
 
 # Screenshots
