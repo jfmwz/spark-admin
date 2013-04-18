@@ -103,7 +103,7 @@
 
 {% if master_nodes[0].state=="stopped" %}
 	<a class="btn btn-primary" href="/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service=cluster&action=start&key_pair={{master_nodes[0].key_name}}">Start cluster</a>
-{% else %}
+{% elif master_nodes[0].state=="running" %}
 	<a class="btn btn-danger" href="javascript:redirect('Are you sure to stop cluster {{cluster_name}}?', '/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service=cluster&action=stop&key_pair={{master_nodes[0].key_name}}')">Stop cluster</a>
 {% end %}
 <a class="btn btn-danger" href="javascript:redirect('Are you sure to terminate cluster {{cluster_name}}?', '/action?cluster_name={{cluster_name}}&dns={{master_nodes[0].public_dns_name}}&service=cluster&action=terminate&key_pair={{master_nodes[0].key_name}}')">Terminate cluster</a>

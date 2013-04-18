@@ -1,0 +1,12 @@
+{% extends main.html %}
+
+{% block content %}
+  <h3>Notice</h3>
+  <p>The cluster is being started and may take up to 5 minutes. You may see the cluster status is already running but 
+  please wait until you see Mesos/Ganglia/Ephemeral/Persistent are installed and on (<img src="/static/img/status_green.gif"> icon).</p>
+  <p>If you run Spark-Admin as background service using nohup, supervisord... please notice that the setup script <b>will likely not work</b>
+   due to problem in shell executing. Then you need to run this command manually, remember to replace [master_dns] with the DNS of master node</p>
+   <pre>
+ssh -t -o StrictHostKeyChecking=no -i {{identity_file}} root@[master_dns] 'spark-ec2/setup.sh'</pre>
+  <p><a href="/">Click here</a> to go back to the homepage or you can check the <a href="/static/server.log">server log</a> to see installation status</p>
+{% end %}

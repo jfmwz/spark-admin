@@ -45,11 +45,12 @@ class NewClusterHandler(tornado.web.RequestHandler):
             (AWS_ACCESS_KEY, AWS_SECRET_KEY) = utils.get_aws_credentials()
             os.environ['AWS_ACCESS_KEY_ID'] = AWS_ACCESS_KEY
             os.environ['AWS_SECRET_ACCESS_KEY'] = AWS_SECRET_KEY
-            sys.argv = ["spark_ec2.py", "-s", num_slave, "-u", "root", "-k", key_pair, "-i", os.getcwd() + "/keys/" + key_pair + ".pem", "-t", instance_type, "-m", master_instance_type, "-r", "us-east-1", "-z" , zone, "--ebs-vol-size=" + ebs_vol_size, "--swap=" + swap, "--cluster-type=" + cluster_type, "launch", cluster_name]
+            key_pair_file =  os.getcwd() + "/keys/" + key_pair + ".pem" 
+            sys.argv = ["spark_ec2.py", "-s", num_slave, "-u", "root", "-k", key_pair, "-i", key_pair_file, "-t", instance_type, "-m", master_instance_type, "-r", "us-east-1", "-z" , zone, "--ebs-vol-size=" + ebs_vol_size, "--swap=" + swap, "--cluster-type=" + cluster_type, "launch", cluster_name]
             t = Thread(target=spark_ec2.main, args=())
             t.daemon = True
             t.start()
-            self.render('redirect.html', redirect_msg="The cluster is being created and may take up to 5 minutes. You will be redirected to the homepage in a few seconds, where you can check its status", redirect_link="/")
+            self.render('notice.html', identity_file=key_pair_file)
         except Exception as e:
             print >> stderr, (e)
             self.render('error.html', error_msg=str(e))
@@ -127,7 +128,11 @@ class SqlConsoleHandler(tornado.web.RequestHandler):
             print >> stderr, (e)
             self.render('error.html', error_msg=str(e))
 
+async_ssh = Slacker(ssh, ThreadWorker())
+
 class ActionHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
+    @adisp.process
     def get(self):
         try:
             cluster_name = self.get_argument("cluster_name", "")
@@ -140,51 +145,51 @@ class ActionHandler(tornado.web.RequestHandler):
             # Execute action
             if service == "mesos":
                 if action == "start":
-                    ssh(key_pair_file, dns, "spark-ec2/mesos/start-mesos")
+                    yield async_ssh(key_pair_file, dns, "spark-ec2/mesos/start-mesos")
                 elif action == "stop":
-                    ssh(key_pair_file, dns, "spark-ec2/mesos/stop-mesos")
+                    yield async_ssh(key_pair_file, dns, "spark-ec2/mesos/stop-mesos")
                 elif action == "restart":
-                    ssh(key_pair_file, dns, "spark-ec2/mesos/stop-mesos && spark-ec2/mesos/start-mesos")
+                    yield async_ssh(key_pair_file, dns, "spark-ec2/mesos/stop-mesos && spark-ec2/mesos/start-mesos")
             elif service == "shark":
                 if action == "start":
                     command = (("rsync --ignore-existing -rv -e 'ssh -o StrictHostKeyChecking=no -i %s' " + 
                                 "'%s/' 'root@%s:/root/shark-0.2/conf'") % (key_pair_file, 'deploy.shark', dns))
                     subprocess.check_call(command, shell=True)
-                    ssh(key_pair_file, dns, "nohup ~/shark-0.2/bin/shark --service sharkserver >/dev/null &")
+                    yield async_ssh(key_pair_file, dns, "nohup ~/shark-0.2/bin/shark --service sharkserver >/dev/null &")
                     time.sleep(2)  # Wait for Shark to restart
                 elif action == "stop":
-                    ssh(key_pair_file, dns, "ps ax|grep shark.SharkServer|awk \"{print $1}\"|xargs kill")
+                    yield async_ssh(key_pair_file, dns, "ps ax|grep shark.SharkServer|awk \"{print $1}\"|xargs kill")
                 elif action == "restart":
-                    ssh(key_pair_file, dns, "ps ax|grep shark.SharkServer|awk '{print $1}'|xargs kill && nohup ~/shark-0.2/bin/shark --service sharkserver >/dev/null &")
+                    yield async_ssh(key_pair_file, dns, "ps ax|grep shark.SharkServer|awk '{print $1}'|xargs kill && nohup ~/shark-0.2/bin/shark --service sharkserver >/dev/null &")
                     time.sleep(2)  # Wait for Shark to restart
             elif service == "ganglia":
                 if action == "start":
-                    ssh(key_pair_file, dns, "/etc/init.d/gmetad start && /etc/init.d/httpd start")
+                    yield async_ssh(key_pair_file, dns, "/etc/init.d/gmetad start && /etc/init.d/httpd start")
                 elif action == "stop":
-                    ssh(key_pair_file, dns, "/etc/init.d/gmetad stop && /etc/init.d/httpd stop")
+                    yield async_ssh(key_pair_file, dns, "/etc/init.d/gmetad stop && /etc/init.d/httpd stop")
                 elif action == "restart":
-                    ssh(key_pair_file, dns, "/etc/init.d/gmetad restart && /etc/init.d/httpd restart")
+                    yield async_ssh(key_pair_file, dns, "/etc/init.d/gmetad restart && /etc/init.d/httpd restart")
             elif service == "ephemeral_hdfs":
                 if action == "start":
-                    ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/start-dfs.sh")
+                    yield async_ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/start-dfs.sh")
                 elif action == "stop":
-                    ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/stop-dfs.sh")
+                    yield async_ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/stop-dfs.sh")
                 elif action == "restart":
-                    ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/stop-dfs.sh && ~/ephemeral-hdfs/bin/start-dfs.sh")
+                    yield async_ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/stop-dfs.sh && ~/ephemeral-hdfs/bin/start-dfs.sh")
             elif service == "persistent_hdfs":
                 if action == "start":
-                    ssh(key_pair_file, dns, "~/persistent-hdfs/bin/start-dfs.sh")
+                    yield async_ssh(key_pair_file, dns, "~/persistent-hdfs/bin/start-dfs.sh")
                 elif action == "stop":
-                    ssh(key_pair_file, dns, "~/persistent-hdfs/bin/stop-dfs.sh")
+                    yield async_ssh(key_pair_file, dns, "~/persistent-hdfs/bin/stop-dfs.sh")
                 elif action == "restart":
-                    ssh(key_pair_file, dns, "~/persistent-hdfs/bin/stop-dfs.sh && ~/persistent-hdfs/bin/start-dfs.sh")
+                    yield async_ssh(key_pair_file, dns, "~/persistent-hdfs/bin/stop-dfs.sh && ~/persistent-hdfs/bin/start-dfs.sh")
             elif service == "hadoop_mapreduce":
                 if action == "start":
-                    ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/start-mapred.sh")
+                    yield async_ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/start-mapred.sh")
                 elif action == "stop":
-                    ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/stop-mapred.sh")
+                    yield async_ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/stop-mapred.sh")
                 elif action == "restart":
-                    ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/stop-mapred.sh && ~/ephemeral-hdfs/bin/start-mapred.sh")
+                    yield async_ssh(key_pair_file, dns, "~/ephemeral-hdfs/bin/stop-mapred.sh && ~/ephemeral-hdfs/bin/start-mapred.sh")
             elif service == "cluster":
                 if action == "start":
                     (AWS_ACCESS_KEY, AWS_SECRET_KEY) = utils.get_aws_credentials()
@@ -194,6 +199,8 @@ class ActionHandler(tornado.web.RequestHandler):
                     t = Thread(target=spark_ec2.main, args=())
                     t.daemon = True
                     t.start()
+                    self.render('notice.html', identity_file=key_pair_file)
+                    return
                 elif action == "stop":
                     conn = utils.get_ec2_conn(self)
                     (master_nodes, slave_nodes, zoo_nodes) = utils.get_existing_cluster(conn, cluster_name)
@@ -209,6 +216,9 @@ class ActionHandler(tornado.web.RequestHandler):
                         for inst in zoo_nodes:
                           if inst.state not in ["shutting-down", "terminated"]:
                             inst.stop()
+                    time.sleep(1)
+                    self.redirect("/")
+                    return
                 elif action == "terminate":
                     conn = utils.get_ec2_conn(self)
                     (master_nodes, slave_nodes, zoo_nodes) = utils.get_existing_cluster(conn, cluster_name)
@@ -219,8 +229,9 @@ class ActionHandler(tornado.web.RequestHandler):
                     if zoo_nodes != []:
                         for inst in zoo_nodes:
                           inst.terminate()
-                self.redirect("/")
-                return
+                    time.sleep(1)
+                    self.redirect("/")
+                    return
             time.sleep(1)
             self.redirect("/cluster/" + cluster_name)
         except Exception as e:

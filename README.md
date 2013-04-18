@@ -2,7 +2,7 @@
 Spark-Admin
 ===============
 
-The Spark-Admin provides administrators and developers a GUI to provision and manage Spark clusters and its related services easily. The current alpha version is based on Spark-EC2 script and its latest AMI. Support for other different Linux distros is planned in the next version.
+The Spark-Admin provides administrators and developers a GUI to provision and manage Spark clusters easily. The current alpha version is based on Spark-EC2 script and its latest AMI. Support for other different Linux distros is planned in the next version.
 
 # Features
 * Automatically detect existing Spark clusters created by spark-ec2 script
@@ -13,10 +13,11 @@ The Spark-Admin provides administrators and developers a GUI to provision and ma
 
 # Install
 
-Install PIP
+Install PIP/PyCurl
 
-* Ubuntu: `sudo apt-get install python-pip`
-* RHEL/CentOS: `sudo yum install python-pip`
+* Ubuntu: `sudo apt-get install python-pip python-pycurl`
+* RHEL/CentOS: `sudo yum install python-pip python-pycurl`
+* Mac OS X: `sudo easy_install pip pycurl`
 * Build from source: http://www.pip-installer.org/en/latest/installing.html#using-get-pip
 
 Install Python dependencies

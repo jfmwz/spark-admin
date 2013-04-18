@@ -419,8 +419,8 @@ def setup_standalone_cluster(master, slave_nodes, opts):
   ssh(master, opts, "/root/spark/bin/start-all.sh")
   
 def setup_spark_cluster(master, opts):
-  # ssh(master, opts, "chmod u+x spark-ec2/setup.sh")
-  ssh(master, opts, "chmod u+x spark-ec2/setup.sh && spark-ec2/setup.sh")
+  ssh(master, opts, "chmod u+x spark-ec2/setup.sh")
+  ssh(master, opts, "spark-ec2/setup.sh")
   
   if opts.cluster_type == "mesos":
     print "Mesos cluster started at http://%s:8080" % master

@@ -54,22 +54,6 @@ def isOpen(ip, port):
 	else:
 		return False
             
-def stop_cluster(conn, cluster_name):
-	(master_nodes, slave_nodes, zoo_nodes) = get_existing_cluster(conn, cluster_name, die_on_error=False)
-	print "Stopping master..."
-  	for inst in master_nodes:
-	  	if inst.state not in ["shutting-down", "terminated"]:
-	  		inst.stop()
-	print "Stopping slaves..."
-  	for inst in slave_nodes:
-	  	if inst.state not in ["shutting-down", "terminated"]:
-	  	 	inst.stop()
-  	if zoo_nodes != []:
-	  	print "Stopping zoo..."
-		for inst in zoo_nodes:
-	  		if inst.state not in ["shutting-down", "terminated"]:
-			  	inst.stop()
-
 def get_ec2_conn(self):
 	(AWS_ACCESS_KEY, AWS_SECRET_KEY) = get_aws_credentials()
 	if AWS_ACCESS_KEY == "" or AWS_SECRET_KEY == "":
@@ -118,9 +102,6 @@ def detect_existing_clusters(conn):
 		dict_slaves[name] = slave_nodes
 	return (names, dict_masters, dict_slaves)
 
-def is_active(instance):
-	return (instance.state in ['pending', 'running', 'stopping', 'stopped'])
-
 def get_existing_cluster(conn, cluster_name, die_on_error=True):
 	print "Searching for existing cluster " + cluster_name + "..."
 	reservations = conn.get_all_instances()
@@ -128,8 +109,6 @@ def get_existing_cluster(conn, cluster_name, die_on_error=True):
 	slave_nodes = []
 	zoo_nodes = []
 	for res in reservations:
-		# active = [i for i in res.instances if is_active(i)]
-		# if len(active) > 0:
 		group_names = [g.name for g in res.groups]
 		if group_names == [cluster_name + "-master"]:
 			master_nodes += res.instances
